@@ -8,11 +8,14 @@ class UsersController < ApplicationController
     end
 
     def create
-        render json: User.find_or_create_by(user_params)
+        user = User.find_or_create_by(user_params)
+        user.money ||= 1000
+        user.save
+        render json: user
     end
 
     def update
-        user.find(params[:id]).update(user_params)
+        User.find(params[:id]).update(user_params)
         render json: User.find(params[:id])
     end
 

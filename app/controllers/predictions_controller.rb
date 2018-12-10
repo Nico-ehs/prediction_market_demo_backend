@@ -1,3 +1,4 @@
+
 class PredictionsController < ApplicationController
   def index
       render json: Prediction.all
@@ -8,7 +9,19 @@ class PredictionsController < ApplicationController
   end
 
   def create
-      render json: Prediction.find_or_create_by(prediction_params)
+      print "\n #{params} test1 \n "
+      user = User.find(params[:prediction][:user_id])
+      print "\n \n #{user.money} #{user.money >= params[:prediction][:amount]} \n \n"
+      if user.money < params[:prediction][:amount]
+        render json: {log: "Not enough money"}
+      else
+        # binding.pry
+        user.money = user.money - params[:prediction][:amount]
+        user.save
+        render json: {log: "Bet made"}
+      end
+
+
   end
 
   def update
@@ -22,6 +35,6 @@ class PredictionsController < ApplicationController
 
   private
   def prediction_params
-      params.require(:event).permit(:name)
+      params.require(:prediction).permit(:amount, :user_id, :outcome_id)
   end
 end
